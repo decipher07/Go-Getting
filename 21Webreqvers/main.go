@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -12,7 +13,8 @@ const myurl = "http://3.109.139.40:3000/"
 func main() {
 	fmt.Println("Hello World")
 	// PerformGetRequest()
-	performPostRequest()
+	// performPostRequest()
+	// performPostFormRequest()
 }
 
 func PerformGetRequest() {
@@ -55,6 +57,25 @@ func performPostRequest() {
 
 	defer response.Body.Close()
 	content, _ := ioutil.ReadAll(response.Body)
+
+	fmt.Println(string(content))
+}
+
+func performPostFormRequest() {
+	pathToPost := myurl + "/payment/makepayment"
+
+	data := url.Values{}
+	data.Add("userId", "98e3c010-1573-4d44-a23a-323a0dd25f56")
+	data.Add("month", "11")
+
+	response, err := http.PostForm(pathToPost, data)
+
+	if err != nil {
+		panic(err)
+	}
+
+	content, _ := ioutil.ReadAll(response.Body)
+	defer response.Body.Close()
 
 	fmt.Println(string(content))
 }
