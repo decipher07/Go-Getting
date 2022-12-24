@@ -86,7 +86,6 @@ func getOneCourse(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// json.NewEncoder(w).Encode("Sorry No Course exists by that Id")
 	message := make(map[string]string)
 	message["status"] = "Sorry, The Course by that Id does not exists!"
 	json.NewEncoder(w).Encode(message)
