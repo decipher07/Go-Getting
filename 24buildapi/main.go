@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -32,7 +33,32 @@ func (c *Course) IsEmpty() bool {
 }
 
 func main() {
-	fmt.Println("Hello World")
+	fmt.Println("API Runnings")
+
+	/* Seeding Database	*/
+	courses = append(courses, Course{CourseId: "1", CourseName: "ReactJS", CoursePrice: 199, Author: &Author{
+		Fullname: "DJ",
+		Website:  "dj.com",
+	}})
+
+	courses = append(courses, Course{CourseId: "2", CourseName: "NodeJS", CoursePrice: 299, Author: &Author{
+		Fullname: "DJ1",
+		Website:  "dj1.com",
+	}})
+
+	/* Defining the Router */
+	r := mux.NewRouter()
+
+	/* Routing Methods */
+	r.HandleFunc("/", serveHome).Methods("GET")
+	r.HandleFunc("/courses", getAllCourses).Methods("GET")
+	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET")
+	r.HandleFunc("/course", createOneCourse).Methods("POST")
+	r.HandleFunc("/course/{id}", updateOneCourse).Methods("PUT")
+	r.HandleFunc("/course/{id}", deleteOneCourse).Methods("DELETE")
+
+	/* Starting Server */
+	log.Fatal(http.ListenAndServe(":3000", r))
 }
 
 /* Controllers */
@@ -60,7 +86,10 @@ func getOneCourse(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	json.NewEncoder(w).Encode("Sorry No Course exists by that Id")
+	// json.NewEncoder(w).Encode("Sorry No Course exists by that Id")
+	message := make(map[string]string)
+	message["status"] = "Sorry, The Course by that Id does not exists!"
+	json.NewEncoder(w).Encode(message)
 }
 
 func createOneCourse(w http.ResponseWriter, r *http.Request) {
