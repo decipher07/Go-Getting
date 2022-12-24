@@ -56,6 +56,7 @@ func getOneCourse(w http.ResponseWriter, r *http.Request) {
 	for _, val := range courses {
 		if val.CourseId == params["id"] {
 			json.NewEncoder(w).Encode(val)
+			return
 		}
 	}
 
@@ -75,10 +76,50 @@ func createOneCourse(w http.ResponseWriter, r *http.Request) {
 
 	if course.IsEmpty() {
 		json.NewEncoder(w).Encode("No data inside JSON")
+		return
 	}
 
 	rand.Seed(time.Now().Unix())
 	course.CourseId = strconv.Itoa(rand.Intn(100))
 	courses = append(courses, course)
 	json.NewEncoder(w).Encode(course)
+}
+
+func updateOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Update a course with Id")
+	w.Header().Set("Content-Type", "application/json")
+
+	var oneCourse Course
+	_ = json.NewDecoder(r.Body).Decode(&oneCourse)
+
+	params := mux.Vars(r)
+
+	for index, course := range courses {
+		if course.CourseId == params["id"] {
+			courses = append(courses[:index], courses[index+1:]...)
+			course = oneCourse
+			course.CourseId = params["id"]
+			courses = append(courses, course)
+			json.NewEncoder(w).Encode(course)
+			return
+		}
+	}
+
+	json.NewEncoder(w).Encode("No Course by that ID Exists")
+}
+
+func deleteOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Delete One Course")
+	w.Header().Set("Content-Type", "application/json")
+
+	params := mux.Vars(r)
+
+	for index, course := range courses {
+		if course.CourseId == params["id"] {
+			courses = append(courses[:index], courses[index+1:]...)
+			break
+		}
+	}
+
+	json.NewEncoder(w).Encode("Delete Operation Successful")
 }
