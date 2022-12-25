@@ -2,8 +2,10 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	model "github.com/decipher07/mongoapi/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -104,14 +106,18 @@ func deleteAllMovies() {
 
 /* Get All Movies */
 func getAllMovies() []primitive.M {
+
+	/* Cur := cursor for MongoDB */
 	cur, err := collection.Find(context.Background(), bson.M{})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	/* Defining the Movies array */
 	var movies []primitive.M
 
+	/* Iterating over the cursor and decoding the values */
 	for cur.Next(context.Background()) {
 		var movie bson.M
 
@@ -124,4 +130,21 @@ func getAllMovies() []primitive.M {
 
 	defer cur.Close(context.Background())
 	return movies
+}
+
+/* Actual Controllers */
+func GetAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	allMovies := getAllMovies()
+	json.NewEncoder(w).Encode(allMovies)
+}
+
+func CreateMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "POST")
+
+	var movie model.Netflix
+	_ = json.NewDecoder(r.Body).Decode(&movie)
+	insertOneMovie(movie)
+	json.NewEncoder(w).Encode(movie)
 }
