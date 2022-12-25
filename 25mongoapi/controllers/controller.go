@@ -15,7 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const connectionString = "mongodb://localhost:27017/netflix"
+const connectionString = "mongodb://localhost:27017/"
 
 /* Database Name */
 const dbName = "netflix"
