@@ -90,3 +90,15 @@ func deleteOneMovie(movieId string) {
 
 	fmt.Println("Deletion Count: ", deleteCount)
 }
+
+/* Delete All Movies */
+func deleteAllMovies() {
+	deleteResult, err := collection.DeleteMany(context.Background(), bson.M{}, nil)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Deletion Count", deleteResult)
+
+}
