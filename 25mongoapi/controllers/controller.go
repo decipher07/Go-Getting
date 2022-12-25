@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	model "github.com/decipher07/mongoapi/models"
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -147,4 +148,13 @@ func CreateMovie(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&movie)
 	insertOneMovie(movie)
 	json.NewEncoder(w).Encode(movie)
+}
+
+func MarkAsWatched(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "POST")
+
+	params := mux.Vars(r)
+	updateOneMovie(params["id"])
+	json.NewEncoder(w).Encode(params)
 }
