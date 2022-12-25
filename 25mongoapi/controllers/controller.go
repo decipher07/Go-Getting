@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	model "github.com/decipher07/mongoapi/models"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -40,4 +41,15 @@ func init() {
 
 	/* Collection Instance */
 	fmt.Println("Collection Instance is ready!")
+}
+
+/* Insert a data */
+func insertOneMovie(movie model.Netflix) {
+	inserted, err := collection.InsertOne(context.Background(), movie)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Inserted 1 movie in Database with id : ", inserted.InsertedID)
 }
