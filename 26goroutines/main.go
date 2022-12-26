@@ -7,7 +7,9 @@ import (
 	"time"
 )
 
-var wg sync.WaitGroup
+var wg sync.WaitGroup /* This must be a pointer */
+var mut sync.Mutex    /* This must be a pointer */
+var signals = []string{"test"}
 
 func main() {
 	/* 	go greeter("Hello")
@@ -18,6 +20,7 @@ func main() {
 		"http://google.com",
 		"http://github.com",
 		"http://fb.com",
+		"http://instagram.com",
 	}
 
 	for _, web := range websiteList {
@@ -26,6 +29,7 @@ func main() {
 	}
 
 	wg.Wait()
+	fmt.Println(signals)
 }
 
 func greeter(s string) {
@@ -38,5 +42,12 @@ func greeter(s string) {
 func getStatusCode(endpoint string) {
 	res, _ := http.Get(endpoint)
 	fmt.Printf("%d Status Code for %s\n", res.StatusCode, endpoint)
+
+	/* Mutex Lock */
+	mut.Lock()
+	signals = append(signals, endpoint)
+	mut.Unlock()
+	/* Mutex Unlock */
+
 	defer wg.Done()
 }
