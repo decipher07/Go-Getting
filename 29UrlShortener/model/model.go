@@ -14,6 +14,8 @@ type Goly struct {
 	Random   bool   `json:"random"`
 }
 
+var db *gorm.DB
+
 func Setup() {
 	/* Database URL for GORM */
 	dsn := "host=127.0.0.1 user=dj password=godisgreat dbname=test port=5432 sslmode=disable"
