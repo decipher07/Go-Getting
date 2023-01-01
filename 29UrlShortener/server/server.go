@@ -91,6 +91,47 @@ func updateGoly(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(goly)
 }
 
+func deleteGoly(c *fiber.Ctx) error {
+	id, err := strconv.ParseUint(c.Params("id"), 10, 64)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "error getting a param id " + err.Error(),
+		})
+	}
+
+	err = model.DeleteGoly(id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "error getting document from db " + err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "success",
+	})
+}
+
+func redirectGoly(c *fiber.Ctx) error {
+	golyUrl := c.Params("redirect")
+	goly, err := model.FindByGolyUrl(golyUrl)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "error getting a param id " + err.Error(),
+		})
+	}
+
+	goly.Clicked += 1
+	err = model.UpdateGoly(goly)
+
+	if err != nil {
+		log.Println("Sorry, An Error occured!")
+	}
+
+	return c.Redirect(goly.Redirect, fiber.StatusTemporaryRedirect)
+}
+
 func SetupAndListen() {
 	router := fiber.New()
 
@@ -108,6 +149,8 @@ func SetupAndListen() {
 	router.Get("/goly/:id", getGoly)
 	router.Post("/goly", createGoly)
 	router.Patch("/goly", updateGoly)
+	router.Delete("/goly/:id", deleteGoly)
+	router.Get("/r/:redirect", redirectGoly)
 
 	log.Fatal(router.Listen(":3000"))
 }
