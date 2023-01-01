@@ -19,18 +19,21 @@ var db *gorm.DB
 func Setup() {
 	/* Database URL for GORM */
 	dsn := "host=127.0.0.1 user=dj password=godisgreat dbname=test port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dbm, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	/* ORM Migrations - Similar to Prisma */
-	err = db.AutoMigrate(&Goly{})
+	err = dbm.AutoMigrate(&Goly{})
 
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	/* Assigning the global gorm database */
+	db = dbm
 
 	log.Println("Database Connected Successfully")
 }

@@ -1,4 +1,4 @@
-package random
+package randomforurl
 
 import "math/rand"
 
