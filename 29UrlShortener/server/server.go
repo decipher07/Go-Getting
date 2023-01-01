@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -140,7 +141,12 @@ func SetupAndListen() {
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-	router.Use(logger.New())
+	/* 	router.Use(logger.New()) */
+	router.Use(requestid.New())
+	router.Use(logger.New(logger.Config{
+		// For more options, see the Config section
+		Format: "${pid} | ${locals:requestid} | ${status} | ${method} | ${path}​ | ${time} \n",
+	}))
 
 	router.Get("/ping", func(c *fiber.Ctx) error {
 		return c.SendStatus(200)
